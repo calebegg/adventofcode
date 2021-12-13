@@ -2,5 +2,10 @@
   "devDependencies": {
     "@types/node": "^16.11.11",
     "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@types/md5": "^2.3.1",
+    "combinatorial-generators": "^1.0.1",
+    "md5": "^2.3.0"
   }
 }
