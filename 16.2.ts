@@ -13,44 +13,70 @@ readFile("16.txt", (err, data) => {
     const version = pull(3);
     const type = pull(3);
     if (type === 4) {
+      let value = 0;
       while (val.startsWith("1")) {
         pull(1);
-        pull(4);
+        value *= 16;
+        value += pull(4);
       }
       pull(1);
-      pull(4);
-      return { versionTotal: version, length };
+      value *= 16;
+      value += pull(4);
+      return { versionTotal: version, length, value };
     }
     const lengthType = pull(1);
+    let versionTotal = version;
+    let totalLength = 0;
+    const values = [];
     if (lengthType === 0) {
       const packetLength = pull(15);
-      let totalLength = 0;
-      let versionTotal = version;
       while (totalLength < packetLength) {
-        const { versionTotal: vt, length: l } = parse(val);
+        const { versionTotal: vt, length: l, value } = parse(val);
+        values.push(value);
         totalLength += l;
         val = val.substring(l);
         versionTotal += vt;
       }
-      return { versionTotal, length: totalLength + length };
     } else {
       const numPackets = pull(11);
-      let versionTotal = version;
-      let totalLength = 0;
       for (let i = 0; i < numPackets; i++) {
-        const { versionTotal: vt, length: l } = parse(val);
+        const { versionTotal: vt, length: l, value } = parse(val);
+        values.push(value);
         val = val.substring(l);
         totalLength += l;
         versionTotal += vt;
       }
-      return { versionTotal, length: totalLength + length };
     }
+    let value = 0;
+    switch (type) {
+      case 0:
+        value = values.reduce((x, y) => x + y);
+        break;
+      case 1:
+        value = values.reduce((x, y) => x * y);
+        break;
+      case 2:
+        value = Math.min(...values);
+        break;
+      case 3:
+        value = Math.max(...values);
+        break;
+      case 5:
+        value = values[0] > values[1] ? 1 : 0;
+        break;
+      case 6:
+        value = values[0] < values[1] ? 1 : 0;
+        break;
+      case 7:
+        value = values[0] === values[1] ? 1 : 0;
+    }
+    return { versionTotal, length: totalLength + length, value };
   }
   console.log(
     parse(
       BigInt("0x" + data.toString())
         .toString(2)
         .padStart(data.length * 4, "0")
-    ).versionTotal
+    ).value
   );
 });
