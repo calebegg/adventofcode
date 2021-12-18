@@ -1,4 +1,6 @@
+use std::collections::HashSet;
 use std::fs;
+use std::process::exit;
 
 const DIRS: [(i32, i32); 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
 
@@ -7,6 +9,8 @@ fn main() {
     let mut x = 0;
     let mut y = 0;
     let mut dir = 0;
+    let mut visited = HashSet::new();
+    visited.insert((0, 0));
     for s in contents.split(", ") {
         if s.starts_with("R") {
             if dir == 3 {
@@ -27,8 +31,16 @@ fn main() {
             .parse::<i32>()
             .expect("Can't parse amount");
 
-        x += DIRS[dir].0 * amount;
-        y += DIRS[dir].1 * amount;
+        for _i in 0..amount {
+            x += DIRS[dir].0;
+            y += DIRS[dir].1;
+
+            if visited.contains(&(x, y)) {
+                println!("{}", x.abs() + y.abs());
+                exit(0);
+            }
+
+            visited.insert((x, y));
+        }
     }
-    println!("{}", x.abs() + y.abs());
 }
