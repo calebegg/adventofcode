@@ -1,7 +1,8 @@
 const data = await Deno.readTextFile("2023/1.txt");
-const lines = data.toString().split("\n");
+
 console.log(
-  lines
+  data
+    .split("\n")
     .map((l) => l.split(""))
     .map(
       (cs) =>

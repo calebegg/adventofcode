@@ -17,9 +17,10 @@ const DIGIT_MATCHER_L = new RegExp(`.*?${DIGIT_MATCHER}`);
 const DIGIT_MATCHER_R = new RegExp(`.*${DIGIT_MATCHER}`);
 
 const data = await Deno.readTextFile("2023/1.txt");
-const lines = data.toString().split("\n");
+
 console.log(
-  lines
+  data
+    .split("\n")
     .map((l) => {
       const first = l.match(DIGIT_MATCHER_L)![1];
       const last = l.match(DIGIT_MATCHER_R)![1];
